@@ -1,6 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity() 
+export enum UserRole {
+  BUYER = 'buyer',
+  SELLER = 'seller',
+}
+
+@Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -8,13 +13,12 @@ export class User {
   @Column({ unique: true })
   username: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({select: false})
   password: string;
 
-  @Column("text", {array: true, default: ['buyer']})
-  roles: string[];
-
+  @Column({type: 'enum', enum: UserRole, default: UserRole.BUYER})
+  role: UserRole;
 }

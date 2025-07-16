@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { User } from './user/user.entity';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -14,7 +16,7 @@ import { UserModule } from './user/user.module';
       password: 'postgres', // DB password
       database: 'postgres', // DB name
 
-      entities: [], // <-- Register entities (tables)
+      entities: [User], // <-- Register entities (tables)
       synchronize: true, // Auto-create tables from entities
       autoLoadEntities: true, // Optional: auto load entities from imported modules
     }),
