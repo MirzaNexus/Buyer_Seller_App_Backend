@@ -11,10 +11,6 @@ import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/user/user.entity';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 
-
-
-
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -25,7 +21,6 @@ export class AuthService {
 
   // Register a new user
   async register({ username, email, password, role }: RegisterDto) {
-
     const existingUser = await this.userRepo.findOne({
       where: [{ username }, { email }],
     });
@@ -33,14 +28,14 @@ export class AuthService {
     if (existingUser) {
       if (existingUser.username === username) {
         throw new ConflictException('Username already exists');
-      }
-      else  {
+      } else {
         throw new ConflictException('Email already exists');
       }
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const userRole = role === UserRole.SELLER ? UserRole.SELLER : UserRole.BUYER;
+    const userRole =
+      role === UserRole.SELLER ? UserRole.SELLER : UserRole.BUYER;
 
     const userObject = this.userRepo.create({
       username,
@@ -56,8 +51,11 @@ export class AuthService {
 
   // Login a user
 
-  async login({username, password}:LoginDto) {
-    const user = await this.userRepo.findOne({ where: { username } , select: ['id', 'username', 'email', 'password', 'role'] });
+  async login({ username, password }: LoginDto) {
+    const user = await this.userRepo.findOne({
+      where: { username },
+      select: ['id', 'username', 'email', 'password', 'role'],
+    });
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
