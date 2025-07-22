@@ -10,6 +10,7 @@ import { User } from 'src/user/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/user/user.entity';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +38,7 @@ export class AuthService {
     const userRole =
       role === UserRole.SELLER ? UserRole.SELLER : UserRole.BUYER;
 
-    const userObject = this.userRepo.create({
+    const userObject = await this.userRepo.create({
       username,
       email,
       password: hashedPassword,
@@ -45,13 +46,13 @@ export class AuthService {
     });
 
     const savedUser = await this.userRepo.save(userObject);
-    delete (savedUser as any).password; // Remove password from the response
+    delete (savedUser as any).password; // const { password, ...userWithoutPassword } = savedUser;S
     return { message: 'User created successfully', user: savedUser };
   }
 
   // Login a user
 
-  async login({ username, password }: LoginDto) {
+  async login({ username, password }: LoginDto, res: Response) {
     const user = await this.userRepo.findOne({
       where: { username },
       select: ['id', 'username', 'email', 'password', 'role'],
@@ -68,7 +69,14 @@ export class AuthService {
     }
 
     const payload = { username: user.username, id: user.id, role: user.role };
-    const token = this.jwtService.sign(payload);
+    const token = await this.jwtService.signAsync(payload);
+
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
 
     return {
       message: 'Login Successfully',
@@ -78,7 +86,6 @@ export class AuthService {
         email: user.email,
         role: user.role,
       },
-      access_token: token,
     };
   }
 }
