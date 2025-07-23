@@ -5,6 +5,7 @@ import {
   IsEnum,
   MinLength,
   MaxLength,
+  IsOptional,
 } from 'class-validator';
 export class RegisterDto {
   @IsNotEmpty({ message: 'Username is required' })
@@ -25,6 +26,7 @@ export class RegisterDto {
   })
   password: string;
 
+  @IsOptional()
   @IsEnum(UserRole, { message: 'Role must be buyer or seller' })
   role?: UserRole;
 }
