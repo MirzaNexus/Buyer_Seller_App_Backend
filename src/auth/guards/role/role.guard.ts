@@ -1,37 +1,48 @@
-// seller.guard.ts
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { ROLES_KEY } from 'src/auth/decorator/roles.decorator';
 
 @Injectable()
-export class SellerGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+export class RolesGuard implements CanActivate {
+  constructor(
+    private reflector: Reflector,
+    private jwtService: JwtService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req: Request = context.switchToHttp().getRequest();
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
-    const token = req.cookies['access_token'];
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
+    const request = context.switchToHttp().getRequest<Request>();
+    const token = request.cookies['access_token'];
+
     if (!token) {
-      throw new UnauthorizedException('Token missing');
+      throw new ForbiddenException('No token found in cookies');
     }
 
     try {
-      const decoded = await this.jwtService.verifyAsync(token);
+      const user = await this.jwtService.verifyAsync(token);
 
-      if (decoded.role === 'seller') {
-        req['user'] = decoded;
-        return true;
-      } else {
-        throw new ForbiddenException('You are not authorized as seller');
+      if (!requiredRoles.includes(user.role)) {
+        throw new ForbiddenException('Access denied for your role');
       }
-    } catch (err) {
-      throw new UnauthorizedException('Invalid or expired token');
+      request['user'] = user;
+      return true;
+    } catch (error) {
+      throw new ForbiddenException('Token verification failed');
     }
   }
 }
