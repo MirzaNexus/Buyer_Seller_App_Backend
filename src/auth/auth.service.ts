@@ -52,7 +52,7 @@ export class AuthService {
 
   // Login a user
 
-  async login({ username, password }: LoginDto, res: Response, req?: Request) {
+  async login({ username, password }: LoginDto, res: Response, req: Request) {
     const user = await this.userRepo.findOne({
       where: { username },
       select: ['id', 'username', 'email', 'password', 'role'],
@@ -66,25 +66,24 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
-    const existingToken = req?.cookies?.access_token;
-    let tokenStatus = 'new';
-    if (existingToken) {
-      try {
-        await this.jwtService.verifyAsync(existingToken);
-        return {
-          message: 'Already logged in',
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-          },
-        };
-      } catch (e) {
-        tokenStatus = 'renewed';
-      }
-    }
+    // const existingToken = req?.cookies?.access_token;
+    // let tokenStatus = 'new';
+    // if (existingToken) {
+    //   try {
+    //     await this.jwtService.verifyAsync(existingToken);
+    //     return {
+    //       message: 'Already logged in',
+    //       user: {
+    //         id: user.id,
+    //         username: user.username,
+    //         email: user.email,
+    //         role: user.role,
+    //       },
+    //     };
+    //   } catch (e) {
+    //     tokenStatus = 'renewed';
+    //   }
+    // }
 
     const payload = {
       username: user.username,
@@ -101,10 +100,7 @@ export class AuthService {
     });
 
     return {
-      message:
-        tokenStatus === 'renewed'
-          ? 'Session renewed (expired/invalid token replaced)'
-          : 'Login Successful',
+      message: 'Login Successful',
       user: {
         id: user.id,
         username: user.username,

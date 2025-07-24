@@ -16,7 +16,7 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
-    @Req() req?: Request,
+    @Req() req: Request,
   ) {
     return this.authService.login(loginDto, res, req);
   }
