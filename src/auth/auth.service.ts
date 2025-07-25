@@ -10,6 +10,7 @@ import { User } from 'src/user/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/user/user.entity';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { Response, Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +38,7 @@ export class AuthService {
     const userRole =
       role === UserRole.SELLER ? UserRole.SELLER : UserRole.BUYER;
 
-    const userObject = this.userRepo.create({
+    const userObject = await this.userRepo.create({
       username,
       email,
       password: hashedPassword,
@@ -45,13 +46,13 @@ export class AuthService {
     });
 
     const savedUser = await this.userRepo.save(userObject);
-    delete (savedUser as any).password; // Remove password from the response
+    delete (savedUser as any).password; // const { password, ...userWithoutPassword } = savedUser;S
     return { message: 'User created successfully', user: savedUser };
   }
 
   // Login a user
 
-  async login({ username, password }: LoginDto) {
+  async login({ username, password }: LoginDto, res: Response, req: Request) {
     const user = await this.userRepo.findOne({
       where: { username },
       select: ['id', 'username', 'email', 'password', 'role'],
@@ -62,23 +63,50 @@ export class AuthService {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    // const existingToken = req?.cookies?.access_token;
+    // let tokenStatus = 'new';
+    // if (existingToken) {
+    //   try {
+    //     await this.jwtService.verifyAsync(existingToken);
+    //     return {
+    //       message: 'Already logged in',
+    //       user: {
+    //         id: user.id,
+    //         username: user.username,
+    //         email: user.email,
+    //         role: user.role,
+    //       },
+    //     };
+    //   } catch (e) {
+    //     tokenStatus = 'renewed';
+    //   }
+    // }
 
-    const payload = { username: user.username, id: user.id, role: user.role };
-    const token = this.jwtService.sign(payload);
+    const payload = {
+      username: user.username,
+      id: user.id,
+      role: user.role,
+    };
+    const token = await this.jwtService.signAsync(payload);
+
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    });
 
     return {
-      message: 'Login Successfully',
+      message: 'Login Successful',
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
       },
-      access_token: token,
     };
   }
 }
