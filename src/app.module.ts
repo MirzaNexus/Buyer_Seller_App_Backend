@@ -4,8 +4,13 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+<<<<<<< Updated upstream
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from './config/validation';
+=======
+import { User } from './user/user.entity';
+import { ProductsModule } from './products/products.module';
+>>>>>>> Stashed changes
 
 @Module({
   imports: [
@@ -30,6 +35,7 @@ import { validationSchema } from './config/validation';
 
     AuthModule,
     UserModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
