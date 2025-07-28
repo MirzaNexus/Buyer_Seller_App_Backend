@@ -4,13 +4,13 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
-<<<<<<< Updated upstream
+import { ProductsModule } from './products/products.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from './config/validation';
-=======
-import { User } from './user/user.entity';
-import { ProductsModule } from './products/products.module';
->>>>>>> Stashed changes
+import { CategoriesModule } from './categories/categories.module';
+import { BrandsModule } from './brands/brands.module';
+import { TagsModule } from './tags/tags.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -36,6 +36,10 @@ import { ProductsModule } from './products/products.module';
     AuthModule,
     UserModule,
     ProductsModule,
+    CategoriesModule,
+    BrandsModule,
+    TagsModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

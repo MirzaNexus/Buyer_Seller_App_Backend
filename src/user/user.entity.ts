@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Product } from 'src/products/product.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 export enum UserRole {
   BUYER = 'buyer',
@@ -21,4 +22,7 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.BUYER })
   role: UserRole;
+
+  @OneToMany(() => Product, (product) => product.seller, { cascade: true })
+  products: Product[];
 }
