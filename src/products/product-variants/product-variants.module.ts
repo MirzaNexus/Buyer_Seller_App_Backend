@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ProductVariantsService } from './product-variants.service';
 import { ProductVariantsController } from './product-variants.controller';
-import { ProductVariantOptionModule } from './product-variant-option/product-variant-option.module';
+import { ProductVariantOption } from '../product-variant-option/product-variant-option.entity';
+import { Product } from '../product.entity';
+import { Inventory } from 'src/inventory/inventory.entity';
 
 @Module({
+  imports: [ProductVariantOption, Product, Inventory],
   controllers: [ProductVariantsController],
   providers: [ProductVariantsService],
-  imports: [ProductVariantOptionModule],
 })
 export class ProductVariantsModule {}

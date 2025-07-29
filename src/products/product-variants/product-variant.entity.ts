@@ -21,7 +21,7 @@ export class ProductVariant {
   })
   product: Product;
 
-  @Column({ type: 'varchar', length: 100, unique: true })
+  @Column({ type: 'varchar', length: 100 })
   sku: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
@@ -32,6 +32,9 @@ export class ProductVariant {
 
   @Column({ nullable: true })
   image_url: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  shipping_weight: number | null;
 
   @OneToMany(() => Inventory, (inventory) => inventory.variant, {
     cascade: true,

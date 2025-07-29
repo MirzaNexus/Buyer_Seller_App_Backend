@@ -16,12 +16,11 @@ export enum InventoryType {
   DAMAGE = 'damage',
   RESTOCK = 'restock',
   RETURN = 'return',
-  MANUAL_ADJUSTMENT = 'manual_adjustment',
 }
 
 @Entity()
 @Check(
-  `("productId" IS NOT NULL AND "variantId" IS NULL) OR ("productId" IS NULL AND "variantId" IS NOT NULL)`,
+  `("product_id" IS NOT NULL AND "variant_id" IS NULL) OR ("product_id" IS NULL AND "variant_id" IS NOT NULL)`,
 )
 export class Inventory {
   @PrimaryGeneratedColumn()

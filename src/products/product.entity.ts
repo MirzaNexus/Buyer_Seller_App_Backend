@@ -48,11 +48,29 @@ export class Product {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   discount_price: number | null;
 
+  @Column({ type: 'timestamp', nullable: true })
+  discount_start_date: Date | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  discount_end_date: Date | null;
+
   @Column({ type: 'varchar', length: 100, unique: true })
   sku: string;
 
   @Column({ type: 'enum', enum: ProductStatus, default: ProductStatus.Draft })
   status: ProductStatus;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  shipping_weight: number | null;
+
+  @Column({ default: true })
+  is_active: boolean;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   //Relationships
 
@@ -90,16 +108,4 @@ export class Product {
     eager: true,
   })
   variants: ProductVariant[];
-
-  //   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  //   shipping_weight: number | null;
-
-  @Column({ default: true })
-  is_active: boolean;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 }
