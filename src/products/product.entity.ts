@@ -17,6 +17,7 @@ import { Brand } from 'src/brands/brand.entity';
 import { Tag } from 'src/tags/tag.entity';
 import { Inventory } from 'src/inventory/inventory.entity';
 import { ProductVariant } from './product-variants/product-variant.entity';
+import { ProductVideo } from './product_videos/product_video.entity';
 
 export enum ProductStatus {
   Draft = 'draft',
@@ -79,6 +80,11 @@ export class Product {
     eager: true,
   })
   images: ProductImage[];
+
+  @OneToMany(() => ProductVideo, (productVideo) => productVideo.product, {
+    cascade: true,
+  })
+  videos?: ProductVideo[];
 
   @ManyToMany(() => Category, (category) => category.products, {
     cascade: true,

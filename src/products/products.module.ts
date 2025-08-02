@@ -15,6 +15,7 @@ import { Tag } from 'src/tags/tag.entity';
 import { Brand } from 'src/brands/brand.entity';
 import { ProductVariant } from './product-variants/product-variant.entity';
 import { Inventory } from 'src/inventory/inventory.entity';
+import { ProductVideosModule } from './product_videos/product_videos.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Inventory } from 'src/inventory/inventory.entity';
     ProductVariantOptionModule,
     VariantsModule,
     VariantOptionsModule,
+    ProductVideosModule,
   ],
   controllers: [ProductsController],
   providers: [ProductsService],

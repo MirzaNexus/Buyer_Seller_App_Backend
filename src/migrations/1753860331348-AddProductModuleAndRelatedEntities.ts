@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddProductModuleAndRelatedEntities1753801166118 implements MigrationInterface {
-    name = 'AddProductModuleAndRelatedEntities1753801166118'
+export class AddProductModuleAndRelatedEntities1753860331348 implements MigrationInterface {
+    name = 'AddProductModuleAndRelatedEntities1753860331348'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "categories" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(100) NOT NULL, "slug" character varying(100) NOT NULL, "is_active" boolean NOT NULL DEFAULT true, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "parentId" uuid, CONSTRAINT "UQ_420d9f679d41281f282f5bc7d09" UNIQUE ("slug"), CONSTRAINT "UQ_8b0be371d28245da6e4f4b61878" UNIQUE ("name"), CONSTRAINT "PK_24dbc6126a28ff948da33e97d3b" PRIMARY KEY ("id"))`);
@@ -12,7 +12,9 @@ export class AddProductModuleAndRelatedEntities1753801166118 implements Migratio
         await queryRunner.query(`CREATE TABLE "variation_options" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "variationId" uuid, CONSTRAINT "PK_d8fc1548588bf512038096fd4b5" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "product_variant_options" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "variantId" uuid, "optionId" uuid, CONSTRAINT "PK_cd62d81fd4813d94bfd1ef7cda5" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "product_variants" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "sku" character varying(100) NOT NULL, "price" numeric(10,2) NOT NULL, "discount" numeric(5,2), "image_url" character varying, "shipping_weight" numeric(10,2), "productId" uuid, CONSTRAINT "UQ_96473e185ba3f4f12dd0b2734d2" UNIQUE ("productId", "sku"), CONSTRAINT "PK_281e3f2c55652d6a22c0aa59fd7" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."inventory_type_enum" AS ENUM('purchase', 'damage', 'restock', 'return')`);
         await queryRunner.query(`CREATE TABLE "inventory" ("id" SERIAL NOT NULL, "stock_quantity" integer NOT NULL DEFAULT '0', "low_stock_threshold" integer NOT NULL DEFAULT '0', "is_out_of_stock" boolean NOT NULL DEFAULT false, "type" "public"."inventory_type_enum" NOT NULL DEFAULT 'purchase', "note" character varying, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "product_id" uuid, "variant_id" uuid, CONSTRAINT "CHK_1039731bd8150fcc0318f1204c" CHECK (("product_id" IS NOT NULL AND "variant_id" IS NULL) OR ("product_id" IS NULL AND "variant_id" IS NOT NULL)), CONSTRAINT "PK_82aa5da437c5bbfb80703b08309" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."products_status_enum" AS ENUM('draft', 'active', 'inactive')`);
         await queryRunner.query(`CREATE TABLE "products" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(255) NOT NULL, "slug" character varying(255) NOT NULL, "description" text NOT NULL, "price" numeric(10,2) NOT NULL, "discount_price" numeric(10,2), "discount_start_date" TIMESTAMP, "discount_end_date" TIMESTAMP, "sku" character varying(100) NOT NULL, "status" "public"."products_status_enum" NOT NULL DEFAULT 'draft', "shipping_weight" numeric(10,2), "is_active" boolean NOT NULL DEFAULT true, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "seller_id" uuid, "brand_id" uuid, CONSTRAINT "UQ_464f927ae360106b783ed0b4106" UNIQUE ("slug"), CONSTRAINT "UQ_c44ac33a05b144dd0d9ddcf9327" UNIQUE ("sku"), CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "username" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, "role" "public"."user_role_enum" NOT NULL DEFAULT 'buyer', CONSTRAINT "UQ_78a916df40e02a9deb1c4b75edb" UNIQUE ("username"), CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "products_categories_categories" ("productsId" uuid NOT NULL, "categoriesId" uuid NOT NULL, CONSTRAINT "PK_8fd95511a998d598ff66d500933" PRIMARY KEY ("productsId", "categoriesId"))`);
@@ -60,7 +62,9 @@ export class AddProductModuleAndRelatedEntities1753801166118 implements Migratio
         await queryRunner.query(`DROP TABLE "products_categories_categories"`);
         await queryRunner.query(`DROP TABLE "user"`);
         await queryRunner.query(`DROP TABLE "products"`);
+        await queryRunner.query(`DROP TYPE "public"."products_status_enum"`);
         await queryRunner.query(`DROP TABLE "inventory"`);
+        await queryRunner.query(`DROP TYPE "public"."inventory_type_enum"`);
         await queryRunner.query(`DROP TABLE "product_variants"`);
         await queryRunner.query(`DROP TABLE "product_variant_options"`);
         await queryRunner.query(`DROP TABLE "variation_options"`);
