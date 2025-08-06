@@ -5,6 +5,15 @@ import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// ✔ Built-in Feature:
+// Ctrl + Click → Go to Definition
+
+// Alt + F12 → Peek Definition
+
+// Shift + F12 → Find All References
+
+// Ctrl + T → Go to Symbol in Workspace
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
@@ -21,6 +30,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

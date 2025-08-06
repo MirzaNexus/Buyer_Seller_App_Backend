@@ -30,6 +30,12 @@ export class ProductVariant {
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   discount: number;
 
+  @Column({ type: 'timestamp', nullable: true })
+  discount_start_date: Date | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  discount_end_date: Date | null;
+
   @Column({ nullable: true })
   image_url: string;
 

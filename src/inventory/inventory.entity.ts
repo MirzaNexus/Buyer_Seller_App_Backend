@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from 'src/products/product.entity';
 import { ProductVariant } from 'src/products/product-variants/product-variant.entity';
 
 export enum InventoryType {
@@ -19,19 +18,9 @@ export enum InventoryType {
 }
 
 @Entity()
-@Check(
-  `("product_id" IS NOT NULL AND "variant_id" IS NULL) OR ("product_id" IS NULL AND "variant_id" IS NOT NULL)`,
-)
 export class Inventory {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Product, (product) => product.inventories, {
-    onDelete: 'CASCADE',
-    nullable: true,
-  })
-  @JoinColumn({ name: 'product_id' })
-  product: Product;
 
   @ManyToOne(() => ProductVariant, (variant) => variant.inventories, {
     nullable: true,

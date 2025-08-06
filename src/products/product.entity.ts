@@ -15,7 +15,6 @@ import { Category } from 'src/categories/category.entity';
 import { ProductImage } from './product-images/product-image.entity';
 import { Brand } from 'src/brands/brand.entity';
 import { Tag } from 'src/tags/tag.entity';
-import { Inventory } from 'src/inventory/inventory.entity';
 import { ProductVariant } from './product-variants/product-variant.entity';
 import { ProductVideo } from './product_videos/product_video.entity';
 
@@ -43,26 +42,8 @@ export class Product {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  price: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  discount_price: number | null;
-
-  @Column({ type: 'timestamp', nullable: true })
-  discount_start_date: Date | null;
-
-  @Column({ type: 'timestamp', nullable: true })
-  discount_end_date: Date | null;
-
-  @Column({ type: 'varchar', length: 100, unique: true })
-  sku: string;
-
   @Column({ type: 'enum', enum: ProductStatus, default: ProductStatus.Draft })
   status: ProductStatus;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  shipping_weight: number | null;
 
   @Column({ default: true })
   is_active: boolean;
@@ -102,12 +83,6 @@ export class Product {
   @ManyToMany(() => Tag, (tag) => tag.products, { cascade: true })
   @JoinTable()
   tags: Tag[];
-
-  @OneToMany(() => Inventory, (inventory) => inventory.product, {
-    cascade: true,
-    eager: true,
-  })
-  inventories: Inventory[];
 
   @OneToMany(() => ProductVariant, (productVariant) => productVariant.product, {
     cascade: true,
