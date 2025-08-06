@@ -15,6 +15,15 @@ export class ProductVideo {
   @Column()
   url: string;
 
+  @Column()
+  title: string;
+
+  @Column({ type: 'int', default: 0 })
+  duration: number;
+
+  @Column({ nullable: true })
+  thumbnail: string;
+
   @Column({ default: false })
   is_primary: boolean;
 

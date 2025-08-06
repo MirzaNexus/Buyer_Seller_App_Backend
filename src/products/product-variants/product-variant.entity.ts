@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Product } from '../product.entity';
 import { ProductVariantOption } from '../product-variant-option/product-variant-option.entity';
@@ -41,6 +43,15 @@ export class ProductVariant {
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   shipping_weight: number | null;
+
+  @Column({ default: false })
+  is_default: boolean;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   @OneToMany(() => Inventory, (inventory) => inventory.variant, {
     cascade: true,
